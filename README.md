@@ -1,5 +1,11 @@
 # codebase-memory-mcp: local code intelligence for AI agents via MCP
 
+> **Fork migration target.** This fork targets a full Python implementation of
+> the server and CBM Lens features, with Python comprising at least 90% of
+> first-party executable source bytes. The current core is native C, and the
+> experimental Python backend provides Python-only repository analysis. The full
+> port remains to be implemented. See the [migration status and acceptance plan](docs/PYTHON_MIGRATION.md).
+
 [![GitHub Release](https://img.shields.io/github/v/release/DeusData/codebase-memory-mcp?style=flat&color=blue)](https://github.com/DeusData/codebase-memory-mcp/releases/latest)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/DeusData/codebase-memory-mcp/release.yml?branch=main&label=main%20CI)](https://github.com/DeusData/codebase-memory-mcp/actions/workflows/release.yml)
