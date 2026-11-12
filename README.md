@@ -105,6 +105,16 @@ Options: `--skip-config` (binary only, no agent setup), `--dir=<path>` (custom l
 
 Restart your coding agent. Say **"Index this project"**: done.
 
+### One-click Python backend in VS Code
+
+To try the experimental Python backend directly from this checkout, open the
+repository folder in VS Code, open the MCP servers view, and select **Start**
+for `codebase-memory-python`. The checked-in `.vscode/mcp.json` launches it
+from the workspace; no native build or separate terminal is required. Python
+3.8 or newer must be available as `python`. This backend indexes Python source
+only; the standard `codebase-memory-mcp` command continues to use the native
+runtime.
+
 <details>
 <summary>Manual install</summary>
 

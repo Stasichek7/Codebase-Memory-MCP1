@@ -1,0 +1,18 @@
+{
+  "servers": {
+    "codebase-memory-python": {
+      "type": "stdio",
+      "command": "python",
+      "args": [
+        "-m",
+        "codebase_memory_mcp.python_backend.server",
+        "--root",
+        "${workspaceFolder}"
+      ],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}\\pkg\\pypi\\src"
+      }
+    }
+  }
+}
