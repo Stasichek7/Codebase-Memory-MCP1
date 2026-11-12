@@ -115,6 +115,19 @@ from the workspace; no native build or separate terminal is required. Python
 only; the standard `codebase-memory-mcp` command continues to use the native
 runtime.
 
+### Repository health reports
+
+This checkout includes a standalone Python tool that counts source files and
+lines by language and lists files above a configurable size threshold. It runs
+locally with Python 3.8 or newer and uses the standard library.
+
+```bash
+python -m health_analyzer.analyzer . --output health-report.json --markdown-output health-report.md
+```
+
+See the [repository health analyzer guide](health_analyzer/README.md) for supported
+languages, exclusions, report formats, and tests.
+
 <details>
 <summary>Manual install</summary>
 
