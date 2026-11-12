@@ -25,6 +25,47 @@ codebase-memory-mcp install   # configure your coding agents
 codebase-memory-mcp --help
 ```
 
+## Pure-Python MCP backend (experimental)
+
+The package also provides an opt-in Python implementation for local Python
+repositories. It uses only the Python standard library and does not download or
+launch the native executable:
+
+```bash
+codebase-memory-mcp-python --root C:\path\to\your\repository
+```
+
+For VS Code, add a server entry to `.vscode/mcp.json` and change the root path:
+
+```json
+{
+  "servers": {
+    "codebase-memory-python": {
+      "type": "stdio",
+      "command": "codebase-memory-mcp-python",
+      "args": ["--root", "C:\\path\\to\\your\\repository"]
+    }
+  }
+}
+```
+
+Other MCP clients can launch the same command with the repository path as its
+`--root` argument. The server communicates over newline-delimited JSON-RPC on
+standard input and output. It indexes Python
+modules, classes, functions, and local imports. Tools include
+`search_symbols`, `search_text`, `file_outline`, `read_source`,
+`dependency_impact`, `repository_health`, and `change_risk`.
+`index_repository` refreshes the in-memory snapshot. Source reads are limited
+to 200 lines; search results are bounded and report when more matches were
+found.
+
+`repository_health` reports syntax errors and oversized Python files.
+`change_risk` adds a local-import impact estimate and test-proximity signals;
+its score is heuristic and is not a replacement for running tests. The
+`health_score` is also a simple heuristic, not a quality or test-coverage
+measurement. This experimental backend analyzes Python source only. The existing
+`codebase-memory-mcp` command and its verified native runtime remain unchanged.
+
 ## Supported platforms
 
 | OS      | Architecture |

@@ -34,6 +34,7 @@ Issues = "https://github.com/DeusData/codebase-memory-mcp/issues"
 
 [project.scripts]
 codebase-memory-mcp = "codebase_memory_mcp:main"
+codebase-memory-mcp-python = "codebase_memory_mcp.python_backend:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/codebase_memory_mcp"]
