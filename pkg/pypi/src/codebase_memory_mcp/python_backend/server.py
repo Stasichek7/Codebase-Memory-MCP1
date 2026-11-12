@@ -83,6 +83,20 @@ _TOOLS = [
         },
     },
     {
+        "name": "architecture_map",
+        "description": (
+            "Summarize the local Python module graph, fan-in/fan-out, and "
+            "circular import groups."
+        ),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "limit": {"type": "integer", "minimum": 1, "maximum": 200}
+            },
+            "additionalProperties": False,
+        },
+    },
+    {
         "name": "repository_health",
         "description": "Summarize Python file count, symbols, large files, syntax errors, and index warnings.",
         "inputSchema": {
@@ -145,6 +159,7 @@ class McpServer:
             "read_source",
             "search_text",
             "dependency_impact",
+            "architecture_map",
             "repository_health",
             "change_risk",
         }:
@@ -175,6 +190,9 @@ class McpServer:
             return index.search_text(query, limit)
         if name == "dependency_impact":
             return index.dependency_impact(_required_string(arguments, "path"))
+        if name == "architecture_map":
+            limit = arguments.get("limit", 100)
+            return index.architecture_map(limit)
         if name == "repository_health":
             return index.repository_health()
         if name == "change_risk":

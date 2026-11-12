@@ -54,7 +54,8 @@ Other MCP clients can launch the same command with the repository path as its
 standard input and output. It indexes Python
 modules, classes, functions, and local imports. Tools include
 `search_symbols`, `search_text`, `file_outline`, `read_source`,
-`dependency_impact`, `repository_health`, and `change_risk`.
+`dependency_impact`, `architecture_map`, `repository_health`, and
+`change_risk`.
 `index_repository` refreshes the in-memory snapshot. Source reads are limited
 to 200 lines; search results are bounded and report when more matches were
 found.
@@ -65,6 +66,8 @@ its score is heuristic and is not a replacement for running tests. The
 `health_score` is also a simple heuristic, not a quality or test-coverage
 measurement. This experimental backend analyzes Python source only. The existing
 `codebase-memory-mcp` command and its verified native runtime remain unchanged.
+`architecture_map` is an additional graph view: it reports module fan-in and
+fan-out and identifies groups of circular imports.
 
 ## Supported platforms
 

@@ -344,6 +344,40 @@ class RepositoryIndex:
             "count": len(impacted),
         }
 
+    def architecture_map(self, limit: int = 100) -> dict:
+        if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 200:
+            raise ValueError("limit must be an integer between 1 and 200")
+
+        graph = {
+            path: sorted(record.imports) for path, record in self.files.items()
+        }
+        reverse = self._reverse_dependencies()
+        selected_paths = sorted(graph)[:limit]
+        selected = set(selected_paths)
+        edges = [
+            {"from": path, "to": target}
+            for path in selected_paths
+            for target in graph[path]
+            if target in selected
+        ]
+        cycles = self._dependency_cycles(graph)
+        return {
+            "modules": [
+                {
+                    "path": path,
+                    "fan_in": len(reverse.get(path, set())),
+                    "fan_out": len(graph[path]),
+                }
+                for path in selected_paths
+            ],
+            "edges": edges,
+            "total_modules": len(graph),
+            "total_edges": sum(len(targets) for targets in graph.values()),
+            "truncated": len(graph) > limit,
+            "cycles": cycles[:50],
+            "cycles_truncated": len(cycles) > 50,
+        }
+
     def repository_health(self) -> dict:
         records = list(self.files.values())
         line_count = sum(item.line_count for item in records)
@@ -480,6 +514,52 @@ class RepositoryIndex:
             for dependency in record.imports:
                 reverse[dependency].add(path)
         return reverse
+
+    @staticmethod
+    def _dependency_cycles(graph: Dict[str, List[str]]) -> List[List[str]]:
+        reverse = {node: [] for node in graph}
+        for node, targets in graph.items():
+            for target in targets:
+                reverse[target].append(node)
+
+        visited = set()
+        finish_order = []
+        for root in sorted(graph):
+            if root in visited:
+                continue
+            visited.add(root)
+            stack = [(root, iter(graph[root]))]
+            while stack:
+                node, neighbors = stack[-1]
+                try:
+                    neighbor = next(neighbors)
+                except StopIteration:
+                    finish_order.append(node)
+                    stack.pop()
+                else:
+                    if neighbor not in visited:
+                        visited.add(neighbor)
+                        stack.append((neighbor, iter(graph[neighbor])))
+
+        visited.clear()
+        cycles = []
+        for root in reversed(finish_order):
+            if root in visited:
+                continue
+            component = []
+            pending = [root]
+            visited.add(root)
+            while pending:
+                node = pending.pop()
+                component.append(node)
+                for neighbor in reverse[node]:
+                    if neighbor not in visited:
+                        visited.add(neighbor)
+                        pending.append(neighbor)
+            if len(component) > 1:
+                cycles.append(sorted(component))
+        cycles.sort()
+        return cycles
 
     @staticmethod
     def _transitive_dependents(

@@ -99,6 +99,31 @@ class RepositoryIndexTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.index.search_text("main", 101)
 
+    def test_architecture_map_reports_import_cycles_and_bounded_modules(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "alpha.py").write_text(
+                "import beta\n", encoding="utf-8"
+            )
+            (root / "beta.py").write_text(
+                "import alpha\n", encoding="utf-8"
+            )
+            (root / "standalone.py").write_text(
+                "def independent(): pass\n", encoding="utf-8"
+            )
+            architecture = RepositoryIndex(root).architecture_map(limit=2)
+
+            self.assertEqual(architecture["total_modules"], 3)
+            self.assertTrue(architecture["truncated"])
+            self.assertEqual(
+                architecture["cycles"], [["alpha.py", "beta.py"]]
+            )
+            self.assertEqual(architecture["total_edges"], 2)
+
+    def test_architecture_map_rejects_invalid_limit(self):
+        with self.assertRaises(ValueError):
+            self.index.architecture_map(limit=201)
+
 
 class McpServerTests(unittest.TestCase):
     def test_initialize_and_tool_discovery(self):
@@ -122,6 +147,7 @@ class McpServerTests(unittest.TestCase):
             self.assertIn("change_risk", [tool["name"] for tool in tools])
             self.assertIn("read_source", [tool["name"] for tool in tools])
             self.assertIn("search_text", [tool["name"] for tool in tools])
+            self.assertIn("architecture_map", [tool["name"] for tool in tools])
 
     def test_stdio_uses_one_json_rpc_response_per_line(self):
         with tempfile.TemporaryDirectory() as directory:
